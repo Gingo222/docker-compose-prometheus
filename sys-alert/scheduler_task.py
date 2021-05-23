@@ -60,8 +60,8 @@ class Mail(object):
         server.quit()
 
 
-log_folder = os.getenv("log_path", "/opt/log")
-log_names = os.getenv("log_name", ["kern.log", "test.log"])
+log_folder = os.getenv("log_folder", "/opt/log")
+log_names = os.getenv("log_names", ["kern.log", "test.log"])
 kern_keywords = os.getenv("kern_keywords", ["error", "exception", "docker"])
 _job_queue = queue.Queue()
 interval_time = int(os.getenv("interval_time", 60))
