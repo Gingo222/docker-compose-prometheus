@@ -77,6 +77,13 @@ if not server_ip and sys.platform != "darwin":
     print("please edit the docker-compose.yaml and  add server ip env")
     sys.exit()
 
+print("init monitor ")
+print("log_folder {} \n"
+      "log_names {} \n"
+      "kern_keywords {} \n"
+      "interval_time {} \n"
+      "server_ip {} \n".format(log_folder, str(log_names), str(kern_keywords), str(interval_time), str(server_ip)))
+
 
 def find_key_words_job(key_args):
     message_list = list()
