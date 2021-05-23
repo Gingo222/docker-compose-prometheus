@@ -22,7 +22,9 @@ class Mail(object):
         self.smtp_port = 25
         self.from_addr = "jinjiegingo@163.com"
         self.password = "GEUTLGCPMVBEHYNS"
-        self.to_addr = ["jinjie@shukun.net", "jinjiegingo@163.com"]
+        self.to_addr = os.getenv("to_addr", ["jinjie@shukun.net"])
+        if isinstance(self.to_addr, str):
+            self.to_addr = self.to_addr.split(",")
         self.msg = MIMEMultipart()
         self.msg['From'] = self._format_addr('SHUKUNQA <%s>' % self.from_addr)
         self.msg['To'] = self._format_addr('Receiver <%s>' % self.to_addr[0])
@@ -111,10 +113,11 @@ def find_keywords_job(key_args):
             except Exception as e:
                 print(e)
             else:
-                if message_list:
-                    print("send mail ..")
-                    mail = Mail()
-                    mail.send_mail(email_body="\n".join(message_list))
+                pass
+    if message_list:
+        print("send mail ..")
+        mail = Mail()
+        mail.send_mail(email_body="\n".join(message_list))
 
 
 def work_jobs():

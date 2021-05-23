@@ -96,6 +96,7 @@ services:
       - kern_keywords=error,exception,waring
       - interval_time=60
       - server_ip=10.12.10.201
+      - to_addr=jinjie@shukun.net,jinjiegingo@163.com
     volumes:
       - /var/log:/opt/log
     networks:
