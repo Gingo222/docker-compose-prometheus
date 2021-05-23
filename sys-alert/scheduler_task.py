@@ -124,7 +124,7 @@ def work_jobs():
 
 
 def schedule_task():
-    schedule.every(interval_time).seconds.do(_job_queue.put, functools.partial(find_key_words_job, kern_keywords))
+    schedule.every(interval_time).seconds.do(_job_queue.put, functools.partial(find_keywords_job, kern_keywords))
     worker_thread = threading.Thread(target=work_jobs)
     worker_thread.start()
     while True:
