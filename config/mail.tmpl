@@ -1,0 +1,20 @@
+{{ define "mail.html" }}
+<table border="1">
+    <tr>
+        <td>alertname</td>
+        <td>instance</td>
+        <td>description</td>
+        <td>summary</td>
+        <td>StartsAt</td>
+    </tr>
+    {{ range $i, $alert := .Alerts }}
+        <tr>
+            <td>{{ index $alert.Labels "alertname" }}</td>
+            <td>{{ index $alert.Labels "instance" }}</td>
+            <td>{{ index $alert.Annotations "description" }}</td>
+            <td>{{ index $alert.Annotations "summary" }}</td>
+            <td>{{ $alert.StartsAt }}</td>
+        </tr>
+    {{ end }}
+</table>
+{{ end }}

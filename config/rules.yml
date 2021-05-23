@@ -1,0 +1,104 @@
+# 监控alg job显存，内存， cpu使用率
+groups:
+- name: containers
+  rules:
+  # alg-job容器cpu利用率超过500
+  - alert: alg_job_high_cpu
+    expr: sum(irate(container_cpu_usage_seconds_total{name=~"alg-job.*"}[1m])) without (cpu)*100 >500
+    for: 30s
+    labels:
+      severity: warning
+    annotations:
+      summary: "alg job high CPU usage"
+      description: "alg job: {{$labels.job}}  {{$labels.name}} CPU usage is {{ humanize $value}}%."
+
+  # alg job 容器内存超过5000M报警
+  - alert: alg_job_high_memory
+    expr: sum(container_memory_rss{name=~"alg-job-.*"}) by (name,instance) > 5000000000
+    for: 30s
+    labels:
+      severity: warning
+    annotations:
+      summary: "alg job high memory usage"
+      description: "alg job:{{$labels.job}} {{$labels.name}} memory consumption is at {{ humanize $value}}."
+
+  # DCM1分钟内pcu使用率超200%
+  - alert: dcm_rendering_high_cpu
+    expr: sum(rate(container_cpu_usage_seconds_total{name=~".*plt-dcm-rendering.*"}[1m])) / count(node_cpu_seconds_total{mode="system"}) * 100 > 200
+    for: 30s
+    labels:
+      severity: warning
+    annotations:
+      summary: "10.12.10.201 dcm_rendering high CPU usage"
+      description: "dcm_rendering CPU usage is {{ humanize $value}}%"
+
+  # REMOTE1分钟内pcu使用率超200%
+  - alert: remote_rendering_high_cpu
+    expr: sum(rate(container_cpu_usage_seconds_total{name=~".*plt-remote-rendering.*"}[1m])) / count(node_cpu_seconds_total{mode="system"}) * 100 > 200
+    for: 30s
+    labels:
+      severity: warning
+    annotations:
+      summary: "10.12.10.201 remote_rendering high CPU usage"
+      description: "remote_rendering CPU usage is {{ humanize $value}}%"
+
+  # DCM 内存使用率超12G
+  - alert: dcm_rendering_high_memory
+    expr: sum(container_memory_usage_bytes{name=~".*plt-dcm-rendering.*"})/1024/1024/1024 > 12
+    for: 30s
+    labels:
+      severity: warning
+    annotations:
+      summary: "10.12.10.201 dcm_rendering high memory usage"
+      description: "dcm_rendering memory consumption is at {{ humanize $value}} G"
+
+  # REMOTE 内存使用率超1G
+  - alert: remote_rendering_high_memory
+    expr: sum(container_memory_usage_bytes{name=~".*plt-remote-rendering.*"})/1024/1024/1024 > 1
+    for: 30s
+    labels:
+      severity: warning
+    annotations:
+      summary: "10.12.10.201 remote-rendering high memory usage"
+      description: "remote-rendering memory consumption is at {{ humanize $value}} G"
+
+  # DATA 内存使用率超10G
+  - alert: remote_rendering_high_memory
+    expr: sum(container_memory_usage_bytes{name=~".*plt-dicom-service.*"})/1024/1024/1024 > 10
+    for: 30s
+    labels:
+      severity: warning
+    annotations:
+      summary: "10.12.10.201 remote-rendering high memory usage"
+      description: "remote-rendering memory consumption is at {{ humanize $value}}G"
+
+- name: host
+  rules:
+  # 显卡0内存使用大于7800M
+  - alert: high_gpu_0_memory_use
+    expr: sum(DCGM_FI_DEV_FB_USED{gpu="0"}) > 7800
+    for: 30s
+    labels:
+      severity: warning
+    annotations:
+      summary: "10.12.10.201 alg job high_gpu_memory_use"
+      description: "Docker host is under high load, the high gpu men is at {{ $value}}. Reported by instance {{ $labels.instance }} of job {{ $labels.job }}."
+
+  # 显卡1内存使用大于7800M
+  - alert: high_gpu_1_memory_use
+    expr: sum(DCGM_FI_DEV_FB_USED{gpu="1"}) > 7800
+    for: 30s
+    labels:
+      severity: warning
+    annotations:
+      summary: "10.12.10.201 alg job high_gpu_memory_use"
+      description: "Docker host is under high load, the high gpu men is at {{ $value}}. Reported by instance {{ $labels.instance }} of job {{ $labels.job }}."
+
+  - alert: HostDisk
+    expr: 100 * (node_filesystem_size_bytes{fstype=~"xfs|ext4"} - node_filesystem_avail_bytes) / node_filesystem_size_bytes > 90
+    for: 5m
+    labels:
+      serverity: warning
+    annotations:
+      summary: "{{$labels.instance}}: High Disk Usage Detected"
+      description: "{{$labels.instance}}, mountpoint {{$labels.mountpoint}}: Disk Usage is {{ $value }}, above 90%"

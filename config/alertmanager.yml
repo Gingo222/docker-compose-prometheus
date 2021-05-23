@@ -1,0 +1,31 @@
+global:
+  smtp_smarthost: 'smtp.163.com:25'
+  smtp_from: 'jinjiegingo@163.com'
+  smtp_auth_username: 'jinjiegingo@163.com'
+  smtp_auth_password: 'GEUTLGCPMVBEHYNS'
+  smtp_require_tls: false
+
+route:
+  group_by: ['alertname']
+  group_wait: 10s
+  group_interval: 5m
+  repeat_interval: 10m
+  receiver: 'live-monitoring'
+
+inhibit_rules:      #抑制规则，当警报发出后，停止重复发送由此警报引发的其他警报。可以消除冗余告警
+  - source_match:       #当此告警发生，其他的告警被抑制
+      severity: 'critical'
+    target_match:       #被抑制的对象
+      severity: 'warning'
+    equal: ['alertname', 'dev', 'instance']
+
+templates:  #报警邮件格式
+ - 'mail.tmpl'
+
+receivers:
+- name: 'live-monitoring'     # 警报，统一报警信息需要多渠道发送，可按下面格式
+  email_configs:    # 邮件报警
+  - to: 'jinjie@shukun.net'
+    html: '{{ template "mail.html" . }}'
+    headers: { Subject: "[WARN] 测试环境报警邮件"}
+    send_resolved: true
