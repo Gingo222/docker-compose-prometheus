@@ -85,7 +85,7 @@ print("log_folder {} \n"
       "server_ip {} \n".format(log_folder, str(log_names), str(kern_keywords), str(interval_time), str(server_ip)))
 
 
-def find_key_words_job(key_args):
+def find_keywords_job(key_args):
     message_list = list()
     interval_time_end = datetime.datetime.now() + (datetime.timedelta(seconds=(interval_time*(-1) + 1)))
     print("interval_time_end:", interval_time_end)
