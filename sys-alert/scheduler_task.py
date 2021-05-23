@@ -70,7 +70,7 @@ if not isinstance(kern_keywords, list):
     kern_keywords = kern_keywords.split(",")
 
 if not isinstance(log_names, list):
-    kern_keywords = log_names.split(",")
+    log_names = log_names.split(",")
 
 server_ip = os.getenv("server_ip")
 if not server_ip and sys.platform != "darwin":
