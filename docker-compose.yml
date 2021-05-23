@@ -100,4 +100,4 @@ services:
       - /var/log:/opt/log
     networks:
       - monitor
-    command: python sys-alert/scheduler_task.py
+    command: python -u sys-alert/scheduler_task.py

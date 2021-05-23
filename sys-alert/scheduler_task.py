@@ -132,4 +132,5 @@ def schedule_task():
 
 
 if __name__ == '__main__':
+    print("start task ..")
     schedule_task()
