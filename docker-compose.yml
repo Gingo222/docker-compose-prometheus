@@ -91,6 +91,7 @@ services:
     privileged: true
     restart: always
     environment:
+      - TZ="Asia/Shanghai"
       - log_folder=/opt/log
       - log_names=kern.log,sys.log
       - kern_keywords=error,exception,waring
