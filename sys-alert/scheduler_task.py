@@ -16,6 +16,31 @@ from email.header import Header
 from email.utils import parseaddr, formataddr
 
 
+log_folder = os.getenv("log_folder", "./")
+log_names = os.getenv("log_names", ["kern.log", "test.log"])
+kern_keywords = os.getenv("kern_keywords", ["error", "exception", "docker"])
+_job_queue = queue.Queue()
+interval_time = int(os.getenv("interval_time", 3))
+
+if not isinstance(kern_keywords, list):
+    kern_keywords = kern_keywords.split(",")
+
+if not isinstance(log_names, list):
+    log_names = log_names.split(",")
+
+server_ip = os.getenv("server_ip")
+if not server_ip and sys.platform != "darwin":
+    print("please edit the docker-compose.yaml and  add server ip env")
+    sys.exit()
+
+print("init monitor ")
+print("log_folder {} \n"
+      "log_names {} \n"
+      "kern_keywords {} \n"
+      "interval_time {} \n"
+      "server_ip {} \n".format(log_folder, str(log_names), str(kern_keywords), str(interval_time), str(server_ip)))
+
+
 class Mail(object):
     def __init__(self):
         self.smtp_server = "smtp.163.com"
@@ -62,31 +87,6 @@ class Mail(object):
         server.quit()
 
 
-log_folder = os.getenv("log_folder", "/opt/log")
-log_names = os.getenv("log_names", ["kern.log", "test.log"])
-kern_keywords = os.getenv("kern_keywords", ["error", "exception", "docker"])
-_job_queue = queue.Queue()
-interval_time = int(os.getenv("interval_time", 60))
-
-if not isinstance(kern_keywords, list):
-    kern_keywords = kern_keywords.split(",")
-
-if not isinstance(log_names, list):
-    log_names = log_names.split(",")
-
-server_ip = os.getenv("server_ip")
-if not server_ip and sys.platform != "darwin":
-    print("please edit the docker-compose.yaml and  add server ip env")
-    sys.exit()
-
-print("init monitor ")
-print("log_folder {} \n"
-      "log_names {} \n"
-      "kern_keywords {} \n"
-      "interval_time {} \n"
-      "server_ip {} \n".format(log_folder, str(log_names), str(kern_keywords), str(interval_time), str(server_ip)))
-
-
 def find_keywords_job(key_args):
     message_list = list()
     interval_time_end = datetime.datetime.now() + (datetime.timedelta(seconds=(interval_time*(-1) + 1)))
@@ -128,6 +128,7 @@ def work_jobs():
 
 def schedule_task():
     schedule.every(interval_time).seconds.do(_job_queue.put, functools.partial(find_keywords_job, kern_keywords))
+    print("start schedule ..")
     worker_thread = threading.Thread(target=work_jobs)
     worker_thread.start()
     while True:
@@ -135,5 +136,4 @@ def schedule_task():
 
 
 if __name__ == '__main__':
-    print("start task ..")
     schedule_task()
