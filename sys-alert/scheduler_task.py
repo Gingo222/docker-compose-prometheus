@@ -106,10 +106,12 @@ def find_keywords_job(key_args):
                     if message_time <= interval_time_end:
                         print("日志内容时间 {} 小于间隔查询最大时间{}".format(message_time, interval_time_end))
                         break
-                    for k in key_args:
-                        if k.lower() in message.lower():
-                            print("find key news {}".format(message))
-                            message_list.append(message)
+                    else:
+                        print("日志内容时间 {} 大于间隔查询最大时间{}".format(message_time, interval_time_end))
+                        for k in key_args:
+                            if k.lower() in message.lower():
+                                print("find key news {}".format(message))
+                                message_list.append(message)
             except Exception as e:
                 print(e)
             else:
